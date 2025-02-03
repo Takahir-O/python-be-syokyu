@@ -9,6 +9,11 @@ from app.const import TodoItemStatusCode
 from .models.item_model import ItemModel
 from .models.list_model import ListModel
 
+from fastapi import Depends
+from .dependencies import get_db
+from sqlalchemy.orm import Session
+
+
 DEBUG = os.environ.get("DEBUG", "") == "true"
 
 app = FastAPI(
@@ -78,6 +83,15 @@ class ResponseTodoList(BaseModel):
     updated_at: datetime = Field(title="datetime that the item was updated")
 
 
-@app.get("/hello", tags=["Hello"])
-def get_hello():
-    return {"Message": "Hello FastAPI!"}
+@app.get("/echo")
+def get_echo(message: str, name: str):
+    return {"Message": f"{message} {name}!"}
+
+@app.get("/health")
+def get_health():
+    return {"status": "ok"}
+
+@app.get("/lists/{todo_list_id}", tags=["Todoリスト"])
+def get_todo_list(todo_list_id: int, db: Session = Depends(get_db)):
+    db_item= db.query(ListModel).filter(ListModel.id == todo_list_id).first()
+    return db_item
