@@ -11,10 +11,13 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=ResponseTodoItem, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ResponseTodoItem, status_code=status.HTTP_201_CREATED)
 def post_todo_item(todo_list_id: int, todo_item: NewTodoItem, db: Session = Depends(get_db)):
     """TODO項目を作成する."""
-    return item_crud.create_todo_item(db, todo_list_id=todo_list_id, new_todo_item=todo_item)
+    try:
+        return item_crud.create_todo_item(db, todo_list_id=todo_list_id, new_todo_item=todo_item)
+    except HTTPException as e:
+        raise e
 
 
 @router.get("/{todo_item_id}", response_model=ResponseTodoItem)
@@ -33,15 +36,16 @@ def put_todo_item(todo_list_id: int, todo_item_id: int, todo_item: UpdateTodoIte
         db, todo_list_id=todo_list_id, todo_item_id=todo_item_id, update_todo_item=todo_item
     )
     if db_todo_item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo Item not found")
+        raise HTTPException(status_code=404, detail="Todo Item not found")
     return db_todo_item
+
 
 
 @router.delete("/{todo_item_id}")
 def delete_todo_item(todo_list_id: int, todo_item_id: int, db: Session = Depends(get_db)):
     """TODO項目を削除する."""
     if not item_crud.delete_todo_item(db, todo_list_id=todo_list_id, todo_item_id=todo_item_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo Item not found")
+        raise HTTPException(status_code=404, detail="Todo Item not found")
     return {"message": "Todo Item deleted successfully"}
 
 @router.get('',response_model=List[ResponseTodoItem])

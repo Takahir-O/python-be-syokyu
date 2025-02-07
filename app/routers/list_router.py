@@ -14,11 +14,10 @@ router = APIRouter(
 
 
 @router.post("",response_model=ResponseTodoList)
-def post_todo_list(todo_list:NewTodoList,db:Session=Depends(get_db)):
+def post_todo_list(todo_list:NewTodoList,db:Session=Depends(get_db),page:int=1,per_page:int=10):
     if list_crud.create_todo_list(db,todo_list) is None:
         raise HTTPException(status_code=422,detail="Todo List already exists")
-    return list_crud.create_todo_list(db,todo_list)
-
+    return list_crud.create_todo_list(db,todo_list,page,per_page)
 
 
 @router.get("/{todo_list_id}",response_model=ResponseTodoList)
