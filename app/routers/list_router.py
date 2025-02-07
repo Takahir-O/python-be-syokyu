@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.crud import list_crud
 from app.dependencies import get_db
@@ -36,7 +37,10 @@ def delete_todo_list(todo_list_id:int,db:Session=Depends(get_db)):
         raise HTTPException(status_code=404,detail="Todo List not found")
     return True
 
-
+# TODOリスト一覧取得 API 
+@router.get('',response_model=List[ResponseTodoList])
+def get_todo_lists(db:Session=Depends(get_db)):
+    return list_crud.get_todo_lists(db)
 
 
 

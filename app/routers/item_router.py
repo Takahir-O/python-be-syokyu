@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
+from typing import List
 from app.dependencies import get_db
 from app.schemas.item_schema import NewTodoItem, ResponseTodoItem, UpdateTodoItem
 from app.crud import item_crud
@@ -43,3 +43,8 @@ def delete_todo_item(todo_list_id: int, todo_item_id: int, db: Session = Depends
     if not item_crud.delete_todo_item(db, todo_list_id=todo_list_id, todo_item_id=todo_item_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo Item not found")
     return {"message": "Todo Item deleted successfully"}
+
+@router.get('',response_model=List[ResponseTodoItem])
+def get_todo_items(todo_list_id:int,db:Session=Depends(get_db)):
+    return item_crud.get_todo_items(db,todo_list_id=todo_list_id)
+

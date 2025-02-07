@@ -37,5 +37,8 @@ def delete_todo_list(db:Session,todo_list_id:int):
     db.commit()
     return True
 
+# 配列の中に各 TODOリストの Json オブジェクトがセットされる。
+def get_todo_lists(db:Session):
+    return db.query(ListModel).all()
 
 

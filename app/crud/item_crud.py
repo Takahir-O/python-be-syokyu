@@ -40,4 +40,7 @@ def delete_todo_item(db:Session,todo_item_id:int):
     db.commit()
     return True
 
+def get_todo_items(db:Session,todo_list_id:int):
+    return db.query(ItemModel).filter(ItemModel.todo_list_id == todo_list_id).all()
+
 
